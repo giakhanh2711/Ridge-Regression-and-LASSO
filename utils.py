@@ -1,12 +1,14 @@
 import re
 import pandas as pd
 
+model_names = ["ridge", "lasso"]
+
 def parse_txt_file_to_csv(txt_filename, csv_filename):
     with open(txt_filename) as f:
         raw_data = f.read()
     formatted_data = re.sub(r"\S+:", ",", raw_data)
 
-    with open(csv_filename) as f:
+    with open(csv_filename, "w") as f:
         f.write(formatted_data)
 
 

@@ -1,6 +1,7 @@
 from sklearn.linear_model import Ridge, Lasso
 from sklearn.metrics import mean_squared_error
 import numpy as np
+import pandas as pd
 
 """ This class is for Ridge Linear Regression and Lasso Linear Regression
 Args:
@@ -31,26 +32,27 @@ class LinearRegression:
         self.model.fit(X, Y)
     
     
-    """
-    Returns:
-        bias: scalar
-        weights: [n_features,]
-    """
     def get_weights(self):
-        return {"bias": self.model.intercept_,
-                "weights": self.model.coef_}
+        return np.concatenate(([self.model.intercept_], self.model.coef_))
+    
     
     """
-    Returns:
-        MSE loss: scalar
+    Return:
+        RMSE loss: scalar
     """
-    def get_mse_loss(self, X, Y):
+    def get_rmse_loss(self, X, Y):
         y_pred = self.model.predict(X)
         mse = mean_squared_error(Y, y_pred)
-        return mse
+        return np.sqrt(mse)
     
 
-    def print_params(self, params: dict):
-        print(f"{self.model_name.capitalize()} bias and weights:")
-        print(f"\tBias w0 = {np.round(params['bias'], 4)}")
-        print(f"\tw.T = {np.round(params['weights'], 4)}")
+    def print_params(self):
+        params = self.get_weights()
+        df = pd.DataFrame({"weights": [f"w{i}" for i in range(params.shape[0])], 
+                           "value": np.round(params, 4)})
+        return df
+
+    
+    def weight_to_csv(self, filename):
+        df = self.print_params()
+        df.to_csv(filename)
